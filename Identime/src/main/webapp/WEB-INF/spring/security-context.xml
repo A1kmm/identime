@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns="http://www.springframework.org/schema/security"
+             xmlns:p="http://www.springframework.org/schema/p"
+	         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+	<!-- Root Context: defines shared resources visible to all other web components -->
+    <global-method-security pre-post-annotations="enabled" />
+
+    <!-- Security definitions. -->
+	<http use-expressions="true">
+	  <intercept-url pattern="/login" access="permitAll"/>
+      <intercept-url pattern="/register" access="permitAll"/>
+	  <intercept-url pattern="/provider" access="permitAll"/>
+	  <intercept-url pattern="/u/*" access="permitAll"/>
+	  <intercept-url pattern="/admin/**" access="hasRole('adminpanel')"/>
+	  <intercept-url pattern="/**" access="isAuthenticated()"/>
+	  <form-login login-page="/login" login-processing-url="/checklogin" authentication-failure-url="/login?login_error=1"/>
+	  <logout logout-url="/logout" logout-success-url="/login"/>
+	  <remember-me/>
+	</http>
+
+    <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+    <beans:bean id="userService" class="com.lanthaps.identime.service.LocalUserServiceImpl"/>
+    <authentication-manager>
+      <authentication-provider user-service-ref="userService">
+        <password-encoder ref="encoder"/>
+      </authentication-provider>
+    </authentication-manager>
+</beans:beans>

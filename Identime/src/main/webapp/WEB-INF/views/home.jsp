@@ -1,14 +1,25 @@
+<%@page import="org.springframework.security.core.context.SecurityContextHolder, java.net.URLEncoder" session="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page session="false" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
-	<title>Home</title>
+  <title>Home</title>
 </head>
 <body>
-<h1>
-	Hello world!  
-</h1>
+  <h1>This is the OpenID Home Page for logged in users</h1>
 
-<P>  The time on the server is ${serverTime}. </P>
+  <p>To log in to a site that supports OpenID, use the following
+    Claimed ID URL:</p>
+  <pre>
+  ${baseURL}/u/<%=URLEncoder.encode(SecurityContextHolder.getContext()
+          .getAuthentication().getName(), "UTF-8")%>
+  </pre>
+  <sec:authorize url="/admin/settings">
+    <h1>Administration</h1>
+    <div>You have administrative access:</div>
+    <ul>
+      <li><a href="admin/settings">Configure OpenID settings</a>.</li>
+    </ul>
+  </sec:authorize>
 </body>
 </html>
