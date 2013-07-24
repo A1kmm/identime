@@ -10,7 +10,7 @@
     <c:out escapeXml="true" value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>
   </p>
 </c:if>
-<form name='f' action='${baseURL}/checklogin' method='POST'>
+<form name='f' action='./checklogin' method='POST'>
   <local:csrfProtect/>
   <table>
     <tr><td>User:</td><td>

@@ -13,20 +13,56 @@ import com.lanthaps.identime.repository.*;
  */
 @Transactional @Service
 public class SettingServiceImpl implements SettingService {
-  @Autowired private StringSettingRepository stringSettings;
-  @Autowired private IntSettingRepository intSettings;
-  @Autowired private BooleanSettingRepository booleanSettings;
+  private StringSettingRepository stringSettings;
+  private IntSettingRepository intSettings;
+  private BooleanSettingRepository booleanSettings;
   
+  @Autowired public void setStringSettings(StringSettingRepository stringSettings) {
+    this.stringSettings = stringSettings;
+  }
+
+  @Autowired public void setIntSettings(IntSettingRepository intSettings) {
+    this.intSettings = intSettings;
+  }
+
+  @Autowired public void setBooleanSettings(BooleanSettingRepository booleanSettings) {
+    this.booleanSettings = booleanSettings;
+  }
+
   public SettingServiceImpl() {};
   
   public static SettingInformation<String> baseURL =
-      new SettingInformation<String>(String.class, "web.baseURL", "Base URL for the web application", "");
-  public static SettingInformation<Integer> approvalDuration =
+      new SettingInformation<String>(String.class, "web.baseURL", "Base URL for the web application", ""),
+      emailFrom =
+      new SettingInformation<String>(String.class, "email.from", "From e-mail for e-mails sent out",
+          "identime-admin@example.org"),
+      emailServer =
+          new SettingInformation<String>(String.class, "email.server", "E-mail server to send e-mails from",
+              "smtp.example.org"),
+      emailProtocol =
+          new SettingInformation<String>(String.class, "email.protocol", "Protocol to use to send e-mail",
+              "smtp"),
+      emailUsername =
+          new SettingInformation<String>(String.class, "email.username", "Username to use to send e-mail (or blank)",
+              ""),
+      emailPassword =
+              new SettingInformation<String>(String.class, "email.password", "Password to use to send e-mail",
+                  "");
+  public static SettingInformation<Integer> emailPort =
+      new SettingInformation<Integer>(Integer.class, "email.port", "Port to use to send e-mail",
+      25),
+      approvalDuration =
       new SettingInformation<Integer>(Integer.class, "openid.approvalDuration",
-          "The time (in seconds) that OpenID site approvals last before expiring",
-          3600 * 24 * 2);
+        "The time (in seconds) that OpenID site approvals last before expiring",
+        3600 * 24 * 2),
+      resetEmailDelayDuration =
+        new SettingInformation<Integer>(Integer.class, "account.resetEmailDelayDuration",
+        "The time (in seconds) after getting a reset password e-mail that another can be sent",
+        3600 * 2);
   
-  private static final SettingInformation<?>[] allSettings = { baseURL, approvalDuration };
+  private static final SettingInformation<?>[] allSettings = {
+    baseURL, emailFrom, emailServer, emailProtocol, emailPort, emailUsername, emailPassword,
+    approvalDuration, resetEmailDelayDuration };
   
   /**
    * @return The set of all settings that can be set.

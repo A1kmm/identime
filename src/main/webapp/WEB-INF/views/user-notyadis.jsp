@@ -4,6 +4,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="openid2.provider" href="${baseURL}/provider"/>
+<link rel="openid.server" href="${baseURL}/provider"/>
 <title>OpenID Claimed Identity</title>
 </head>
 <body>

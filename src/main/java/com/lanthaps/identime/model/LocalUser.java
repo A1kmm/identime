@@ -3,12 +3,16 @@ package com.lanthaps.identime.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import java.io.Serializable;
+
 /**
  * A LocalUser represents a user who can authenticate locally (if the account is enabled).
  * @author Andrew Miller
  */
 @Entity
-public class LocalUser {
+public class LocalUser implements Serializable {
+  private static final long serialVersionUID = 8517985268949893827L;
+
   @Id private String username;
   
   private String password;

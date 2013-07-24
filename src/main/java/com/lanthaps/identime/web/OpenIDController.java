@@ -42,7 +42,6 @@ import com.lanthaps.identime.service.SettingServiceImpl;
 public class OpenIDController {
   OpenIDController() {
     openIDManager = new ServerManager();
-    openIDManager.setEnforceRpId(true);
   }
 	
   private static Logger logger = LoggerFactory.getLogger(OpenIDController.class);
@@ -52,6 +51,7 @@ public class OpenIDController {
   @Autowired private UserSiteApprovalRepository userSiteApprovalRepository;
   @Autowired private LocalUserRepository localUserRepository;
   @Autowired private RequestCache requestCache;
+  @Autowired private CSRFTokenService csrfTokenService;
   
   @RequestMapping(value = "/u/{userName}", method = {RequestMethod.GET, RequestMethod.HEAD},
       produces="application/xrds+xml")
@@ -71,7 +71,7 @@ public class OpenIDController {
 
   @RequestMapping(value = "/approveSite", method = RequestMethod.POST) @Transactional
   public String providerRetry(HttpSession session, Model m, @RequestParam(required=true) String siteEndpoint, HttpServletRequest req) {
-    if (!CSRFTokenService.checkToken(req))
+    if (!csrfTokenService.checkToken(req))
       return "login";
     LocalUser authorisingUser = localUserRepository.findOne(
         SecurityContextHolder.getContext().getAuthentication().getName());
@@ -150,7 +150,7 @@ public class OpenIDController {
       // valid, but we don't know if the user has agreed to log in to the site.
       expireOldSiteApprovals();
       if (userSiteApprovalRepository.findByAuthorisingUserAndSiteEndpoint(
-            user, authRequest.getRealm()).isEmpty()) {
+            user, authRequest.getReturnTo()).isEmpty()) {
         if (isImmediate)
           return sendAuthFailure(authRequest);
         return doApprovalRequest(m, authRequest, rawReq);
@@ -193,7 +193,7 @@ public class OpenIDController {
   }
   
   private String doApprovalRequest(Model m, AuthRequest authRequest, HttpServletRequest rawReq) {
-    m.addAttribute("site", authRequest.getRealm());
+    m.addAttribute("site", authRequest.getReturnTo());
     rawReq.getSession().setAttribute("openid-pending-request", rawReq);
     return "approval";
   }

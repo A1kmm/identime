@@ -24,6 +24,8 @@ import com.lanthaps.identime.model.SettingInformation;
 public class SettingsController {
   public SettingsController() {}
   
+  @Autowired private CSRFTokenService csrfTokenService;
+  
   private SettingService settingService; 
   @Autowired void setSettingService(SettingService settingService) {
     this.settingService = settingService; 
@@ -65,7 +67,7 @@ public class SettingsController {
   @RequestMapping(value = "/admin/saveSetting", method=RequestMethod.GET)
   public String saveSetting(HttpServletRequest req, Model model, @RequestParam("setting") String setting,
       @RequestParam("value") String value) {
-    if (!CSRFTokenService.checkToken(req))
+    if (!csrfTokenService.checkToken(req))
       return "login";
     for (int i = 0; i < settingService.getAllSettings().length; i++) {
       SettingInformation<?> s = settingService.getAllSettings()[i];

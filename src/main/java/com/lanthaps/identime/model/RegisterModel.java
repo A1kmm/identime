@@ -2,6 +2,8 @@ package com.lanthaps.identime.model;
 
 import javax.validation.constraints.*;
 
+import org.hibernate.validator.constraints.Email;
+
 /**
  * The data supplied when a user registers on the site. 
  * @author Andrew Miller
@@ -12,7 +14,9 @@ public class RegisterModel {
   @NotNull @Size(min=6,max=40)
   private String password;
   private String password2;
-
+  @Email
+  private String email;
+  
   /**
    * @return the username
    */
@@ -53,5 +57,13 @@ public class RegisterModel {
    */
   public void setPassword2(String password2) {
     this.password2 = password2;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   } 
 }

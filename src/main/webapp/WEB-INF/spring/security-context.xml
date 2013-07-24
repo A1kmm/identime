@@ -13,18 +13,20 @@
 	  <intercept-url pattern="/login" access="permitAll"/>
       <intercept-url pattern="/register" access="permitAll"/>
 	  <intercept-url pattern="/provider" access="permitAll"/>
+      <intercept-url pattern="/forgot" access="permitAll"/>
+      <intercept-url pattern="/forgot/*" access="permitAll"/>
 	  <intercept-url pattern="/u/*" access="permitAll"/>
 	  <intercept-url pattern="/admin/**" access="hasRole('adminpanel')"/>
 	  <intercept-url pattern="/**" access="isAuthenticated()"/>
 	  <form-login login-page="/login" login-processing-url="/checklogin" authentication-failure-url="/login?login_error=1"/>
 	  <logout logout-url="/logout" logout-success-url="/login"/>
-	  <remember-me/>
+	  <remember-me user-service-ref="localUserService"/>
 	</http>
 
     <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
-    <beans:bean id="userService" class="com.lanthaps.identime.service.LocalUserServiceImpl"/>
+    <beans:bean id="localUserService" class="com.lanthaps.identime.service.LocalUserServiceImpl"/>    
     <authentication-manager>
-      <authentication-provider user-service-ref="userService">
+      <authentication-provider user-service-ref="localUserService">
         <password-encoder ref="encoder"/>
       </authentication-provider>
     </authentication-manager>

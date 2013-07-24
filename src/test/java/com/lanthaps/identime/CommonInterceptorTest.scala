@@ -25,6 +25,9 @@ class CommonInterceptorTest {
 		  var settingMock : SettingService = Mockito.mock(classOf[SettingService])
 		  Mockito.when(settingMock.loadStringSetting(SettingServiceImpl.baseURL)).thenReturn("http://example.org/test/")
 		  interceptor.setSettingService(settingMock)
+		  var csrfMock : CSRFTokenService = Mockito.mock(classOf[CSRFTokenService])
+		  Mockito.when(csrfMock.getSessionToken(Matchers.any[HttpSession])).thenReturn("sessionTokenPlaceholder")
+		  interceptor.setCsrfTokenService(csrfMock)
 		  interceptor.postHandle(new MockHttpServletRequest("GET", "http://example.org/test/"),
 				  new MockHttpServletResponse(), new Object(),
 				  mv)

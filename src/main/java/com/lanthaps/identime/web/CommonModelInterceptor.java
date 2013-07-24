@@ -19,14 +19,19 @@ public class CommonModelInterceptor extends HandlerInterceptorAdapter {
 	public void setSettingService(SettingService settingService) {
 		this.settingService = settingService;
 	}
+	@Autowired
+	public void setCsrfTokenService(CSRFTokenService tokenService) {
+	  this.csrfTokenService = tokenService;
+	}
 	private SettingService settingService;
+	private CSRFTokenService csrfTokenService;
 	
 	@Override public void postHandle(
 			HttpServletRequest request, HttpServletResponse response,
 			Object handler, ModelAndView modelAndView) {
 	  if (!modelAndView.getViewName().startsWith("redirect:")) {
 		  modelAndView.addObject("baseURL", settingService.loadStringSetting(SettingServiceImpl.baseURL));
-		  modelAndView.addObject("csrfToken", CSRFTokenService.getSessionToken(request.getSession()));
+		  modelAndView.addObject("csrfToken", csrfTokenService.getSessionToken(request.getSession()));
 	  }
 	}
 }

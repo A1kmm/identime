@@ -1,13 +1,20 @@
 package com.lanthaps.identime.service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,17 +23,63 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.lanthaps.identime.model.LocalAuthority;
 import com.lanthaps.identime.model.LocalUser;
+import com.lanthaps.identime.model.UserEmail;
 import com.lanthaps.identime.repository.LocalAuthorityRepository;
 import com.lanthaps.identime.repository.LocalUserRepository;
+import com.lanthaps.identime.repository.UserEmailRepository;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service @Transactional
 public class LocalUserServiceImpl implements LocalUserService {
-  @Autowired private LocalUserRepository localUserRepository;
-  @Autowired private LocalAuthorityRepository localAuthorityRepository;
-  
+  private LocalUserRepository localUserRepository;
+  private LocalAuthorityRepository localAuthorityRepository;
+  private UserEmailRepository userEmailRepository;
+  private VelocityEngine velocityEngine;
+  private JavaMailSenderImpl mailSender;
+  private SecureTokenService secureTokenService;
+  private SettingService settingService;
+  private MailServerConfigurator mailServiceConfigurator;
+    
+  @Autowired public void setLocalUserRepository(LocalUserRepository localUserRepository) {
+    this.localUserRepository = localUserRepository;
+  }
+
+  @Autowired public void setLocalAuthorityRepository(
+      LocalAuthorityRepository localAuthorityRepository) {
+    this.localAuthorityRepository = localAuthorityRepository;
+  }
+
+  @Autowired public void setUserEmailRepository(UserEmailRepository userEmailRepository) {
+    this.userEmailRepository = userEmailRepository;
+  }
+
+  @Autowired public void setVelocityEngine(VelocityEngine velocityEngine) {
+    this.velocityEngine = velocityEngine;
+  }
+
+  @Autowired public void setMailSender(JavaMailSenderImpl mailSender) {
+    this.mailSender = mailSender;
+  }
+
+  @Autowired public void setSecureTokenService(SecureTokenService secureTokenService) {
+    this.secureTokenService = secureTokenService;
+  }
+
+  @Autowired public void setSettingService(SettingService settingService) {
+    this.settingService = settingService;
+  }
+
+  @Autowired public void setMailServiceConfigurator(
+      MailServerConfigurator mailServiceConfigurator) {
+    this.mailServiceConfigurator = mailServiceConfigurator;
+  }
+
   private static Logger logger = LoggerFactory.getLogger(LocalUserServiceImpl.class);
   
   public LocalUserServiceImpl() {
@@ -112,7 +165,6 @@ public class LocalUserServiceImpl implements LocalUserService {
     UserDetails u = new User(localUser.getUsername(), localUser.getPassword(),
         localUser.isEnabled(), true, true, true,
         auths);
-    logger.info("Passing user " + u.getUsername() + " with password " + u.getPassword());
     return u;
   }
 
@@ -129,4 +181,46 @@ public class LocalUserServiceImpl implements LocalUserService {
     isNew = localUserRepository.count() == 0;
     return isNew;
   }
+
+  @Override
+  public void setUserEmail(User user, String email) {
+    UserEmail userEmail = userEmailRepository.findOne(user.getUsername());
+    if (userEmail == null) {
+      userEmail = new UserEmail();
+      userEmail.setUsername(user.getUsername());
+      userEmail.setLocalUser(localUserRepository.findOne(user.getUsername()));
+    }
+    userEmail.setEmail(email);
+    userEmailRepository.save(userEmail);
+  }
+
+  @Override
+  public void sendPasswordReset(final UserEmail ue) {
+    ue.setLastResetSent(new Date());
+    final String token = secureTokenService.makeToken();
+    ue.setCurrentEmailResetToken(token);
+
+    userEmailRepository.save(ue);
+
+    mailServiceConfigurator.ensureServerConfiguration(mailSender);
+    mailSender.send(new MimeMessagePreparator() {
+      @Override public void prepare(MimeMessage msg) throws MessagingException {
+        MimeMessageHelper message = new MimeMessageHelper(msg);
+        message.setTo(ue.getEmail());
+        message.setSubject("Password reset");
+        message.setFrom(settingService.loadStringSetting(SettingServiceImpl.emailFrom));
+        
+        Map<String,Object> mailModel = new HashMap<String,Object>();
+        
+        mailModel.put("token", token);
+        mailModel.put("baseURL", settingService.loadStringSetting(SettingServiceImpl.baseURL));
+        String mailMsg =
+            VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "reset-password.vm",
+                "UTF-8", mailModel);
+        
+        message.setText(mailMsg, false);
+      }
+    });
+  }
+
 }

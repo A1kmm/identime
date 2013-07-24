@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="local" uri="/WEB-INF/tags/identime" %>
+<%@ taglib prefix="local" tagdir="/WEB-INF/tags/identime" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -11,16 +11,22 @@
 <body>
   <form:form id="form" modelAttribute="registerModel" method="POST">
     <local:csrfProtect/>
-    <div><label>New username:</label>
-         <form:input path="username" id="username"/>
-         <form:errors class="error" path="username"/></div>
-    <div><label>New password:</label>
-         <form:password showPassword="true" path="password" id="password"/>
-         <form:errors class="error" path="password"/></div>
-    <div><label>Confirm password:</label>
-         <form:password showPassword="true" path="password2" id="password2"/>
-         <form:errors class="error" path="password2"/>
-    </div>    
+    <table>
+    <tr><td><label>New username:</label></td>
+         <td><form:input path="username" id="username"/></td>
+         <td><form:errors class="error" path="username"/></td></tr>
+    <tr><td><label>New password:</label></td>
+         <td><form:password showPassword="true" path="password" id="password"/></td>
+         <td><form:errors class="error" path="password"/></td></tr>
+    <tr><td><label>Confirm password:</label></td>
+         <td><form:password showPassword="true" path="password2" id="password2"/></td>
+         <td><form:errors class="error" path="password2"/></td>
+    </tr>
+    <tr><td><label>E-mail (optional:)</label></td>
+        <td><form:input path="email" id="email"/></td>
+        <td><form:errors class="error" path="email"/></td>
+    </tr>
+    </table>   
     <input type="submit" value="Register" />
   </form:form>
 </body>
