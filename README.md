@@ -12,7 +12,7 @@ Identime is built to run in a Servlet container; it is based on OpenID4J,
 Spring, Hibernate and a number of other Java technologies.
 
 What is an OpenID Provider?
-===========================
+---------------------------
 
 OpenID Providers validate the identity of users to other sites (called Relying
 Parties).
@@ -22,7 +22,7 @@ and so on. However, I am not aware of any stand-alone OpenID Provider software
 packages can that be deployed to make your own OpenID Provider.
 
 How can I build and use Identime?
-=================================
+---------------------------------
 
 You will need a working Java Servlet Container; if you don't already have one,
 [Apache Tomcat](http://tomcat.apache.org) has been tested and confirmed to work.
@@ -48,7 +48,7 @@ for Tomcat7.
 Note that if you deploy it like this, the URL will be http://example.org:8080/identime/
 
 How do I administer the server?
-===============================
+-------------------------------
 
 The first thing you should do after setting up the server is to register a user,
 because the first user to register automatically gets full privileges to change
@@ -66,7 +66,7 @@ you have access to, and the 'From e-mail for e-mails sent out' to suit your
 site.
 
 How do I use Identime?
-======================
+----------------------
 
 Go to / (the root of your server) and, once you are logged in, it will show you
 the Claimed ID string that you can use (it should start with http or https if
@@ -80,3 +80,6 @@ If you aren't logged in, it will ask you to log in. Once logged in, it will ask
 you to confirm you want to log in to the Relying Party; hit confirm to log in
 at the Relying Party.
  
+How do I pronounce Identime?
+----------------------------
+It is supposed to rhyme with 'Identity' - I-dent-ih-me.
