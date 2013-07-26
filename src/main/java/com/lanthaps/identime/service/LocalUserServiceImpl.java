@@ -10,6 +10,7 @@ import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.velocity.app.VelocityEngine;
+import org.joda.time.DateTime;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -21,10 +22,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
+import com.lanthaps.identime.exception.TokenValidityException;
 import com.lanthaps.identime.model.LocalAuthority;
 import com.lanthaps.identime.model.LocalUser;
 import com.lanthaps.identime.model.UserEmail;
@@ -45,7 +48,8 @@ public class LocalUserServiceImpl implements LocalUserService {
   private SecureTokenService secureTokenService;
   private SettingService settingService;
   private MailServerConfigurator mailServiceConfigurator;
-    
+  private PasswordEncoder passwordEncoder;
+  
   @Autowired public void setLocalUserRepository(LocalUserRepository localUserRepository) {
     this.localUserRepository = localUserRepository;
   }
@@ -78,6 +82,10 @@ public class LocalUserServiceImpl implements LocalUserService {
   @Autowired public void setMailServiceConfigurator(
       MailServerConfigurator mailServiceConfigurator) {
     this.mailServiceConfigurator = mailServiceConfigurator;
+  }
+
+  @Autowired public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+    this.passwordEncoder = passwordEncoder;
   }
 
   private static Logger logger = LoggerFactory.getLogger(LocalUserServiceImpl.class);
@@ -183,14 +191,23 @@ public class LocalUserServiceImpl implements LocalUserService {
   }
 
   @Override
-  public void setUserEmail(User user, String email) {
-    UserEmail userEmail = userEmailRepository.findOne(user.getUsername());
+  public void setUserEmail(String username, String email) {
+    UserEmail userEmail = userEmailRepository.findOne(username);
+    if (email != null && email.equals(""))
+      email = null;
     if (userEmail == null) {
+      if (email == null)
+        return;
       userEmail = new UserEmail();
-      userEmail.setUsername(user.getUsername());
-      userEmail.setLocalUser(localUserRepository.findOne(user.getUsername()));
+      userEmail.setUsername(username);
+      userEmail.setLocalUser(localUserRepository.findOne(username));
+    }
+    if (email == null) {
+      userEmailRepository.delete(userEmail);
+      return;
     }
     userEmail.setEmail(email);
+    userEmail.setCurrentEmailResetToken(null);
     userEmailRepository.save(userEmail);
   }
 
@@ -199,7 +216,8 @@ public class LocalUserServiceImpl implements LocalUserService {
     ue.setLastResetSent(new Date());
     final String token = secureTokenService.makeToken();
     ue.setCurrentEmailResetToken(token);
-
+    ue.setTokenIssued(new Date());
+    
     userEmailRepository.save(ue);
 
     mailServiceConfigurator.ensureServerConfiguration(mailSender);
@@ -223,4 +241,29 @@ public class LocalUserServiceImpl implements LocalUserService {
     });
   }
 
+  @Override
+  public UserEmail checkTokenValidity(String token)
+      throws TokenValidityException {
+    if (token == null || token.equals(""))
+      throw new TokenValidityException("No token provided");
+    UserEmail ue = userEmailRepository.findByCurrentEmailResetToken(token);
+    if (ue == null)
+      throw new TokenValidityException("Password reset token not found; it may have " +
+          "already been used. Try sending a new reset e-mail.");
+
+    if (new DateTime(ue.getTokenIssued()).plusSeconds(
+            settingService.loadIntSetting(SettingServiceImpl.tokenExpiryTime)).
+            isBeforeNow())
+      throw new TokenValidityException("Password reset token has expired. " +
+            "Try sending a new reset e-mail.");
+
+    return ue;
+  }
+
+  @Override
+  public void setUserPassword(String username, String password) {
+    LocalUser u = localUserRepository.findOne(username);
+    u.setPassword(passwordEncoder.encode(password));
+    localUserRepository.save(u);
+  }
 }

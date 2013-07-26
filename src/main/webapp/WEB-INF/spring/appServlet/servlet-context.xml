@@ -25,5 +25,6 @@
 	<interceptors>
        <beans:bean class="com.lanthaps.identime.web.CommonModelInterceptor"/>
     </interceptors>
-	
+    
+	<beans:import resource="../security-context.xml"/>
 </beans:beans>

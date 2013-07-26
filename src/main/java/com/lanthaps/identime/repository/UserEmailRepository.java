@@ -7,5 +7,5 @@ import com.lanthaps.identime.model.UserEmail;
 
 @Repository
 public interface UserEmailRepository extends CrudRepository<UserEmail,String> {
-  
+  public UserEmail findByCurrentEmailResetToken(String token);
 }

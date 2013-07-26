@@ -6,6 +6,12 @@
   <title>Home</title>
 </head>
 <body>
+<c:if test="${not empty message}">
+  <p class="message">
+    <c:out escapeXml="true" value="${message}"/>
+  </p>
+</c:if>
+
   <h1>This is the OpenID Home Page for logged in users</h1>
 
   <p>To log in to a site that supports OpenID, use the following

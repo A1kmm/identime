@@ -58,11 +58,15 @@ public class SettingServiceImpl implements SettingService {
       resetEmailDelayDuration =
         new SettingInformation<Integer>(Integer.class, "account.resetEmailDelayDuration",
         "The time (in seconds) after getting a reset password e-mail that another can be sent",
-        3600 * 2);
+        3600 * 2),
+      tokenExpiryTime =
+        new SettingInformation<Integer>(Integer.class, "account.tokenExpiryTime",
+            "The time (in seconds) that a reset password token is valid for",
+            3600 * 24 * 2);
   
   private static final SettingInformation<?>[] allSettings = {
     baseURL, emailFrom, emailServer, emailProtocol, emailPort, emailUsername, emailPassword,
-    approvalDuration, resetEmailDelayDuration };
+    approvalDuration, resetEmailDelayDuration, tokenExpiryTime };
   
   /**
    * @return The set of all settings that can be set.

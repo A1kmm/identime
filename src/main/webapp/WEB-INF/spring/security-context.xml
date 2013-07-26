@@ -6,6 +6,7 @@
 	         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	                             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 	<!-- Root Context: defines shared resources visible to all other web components -->
+	
     <global-method-security pre-post-annotations="enabled" />
 
     <!-- Security definitions. -->
@@ -14,7 +15,8 @@
       <intercept-url pattern="/register" access="permitAll"/>
 	  <intercept-url pattern="/provider" access="permitAll"/>
       <intercept-url pattern="/forgot" access="permitAll"/>
-      <intercept-url pattern="/forgot/*" access="permitAll"/>
+      <intercept-url pattern="/forgot/token" access="permitAll"/>
+      <intercept-url pattern="/accountsettings" access="permitAll"/>
 	  <intercept-url pattern="/u/*" access="permitAll"/>
 	  <intercept-url pattern="/admin/**" access="hasRole('adminpanel')"/>
 	  <intercept-url pattern="/**" access="isAuthenticated()"/>
@@ -25,7 +27,7 @@
 
     <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
     <beans:bean id="localUserService" class="com.lanthaps.identime.service.LocalUserServiceImpl"/>    
-    <authentication-manager>
+    <authentication-manager alias="authenticationManager">
       <authentication-provider user-service-ref="localUserService">
         <password-encoder ref="encoder"/>
       </authentication-provider>

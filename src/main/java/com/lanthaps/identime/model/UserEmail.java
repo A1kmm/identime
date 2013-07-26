@@ -9,6 +9,9 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.Index;
 
 /**
  * UserEmail links an e-mail address to a user.
@@ -18,11 +21,36 @@ import javax.persistence.TemporalType;
 public class UserEmail implements Serializable {
   private static final long serialVersionUID = -3737729855950930288L;
   
-  @Id private String username;
-  @OneToOne @MapsId private LocalUser localUser;
-  private String email;
+  /**
+   * The username of the user.
+   */
+  @NotNull @Id private String username;
+  
+  /**
+   * A mapping to the localUser (by username).
+   */
+  @NotNull @OneToOne @MapsId private LocalUser localUser;
+  
+  /**
+   * The e-mail address of the user.
+   */
+  @NotNull private String email;
+  
+  /**
+   * If non-null, the date a reset was last sent. 
+   */
   @Temporal(TemporalType.TIMESTAMP) private Date lastResetSent;
-  private String currentEmailResetToken;
+  
+  /**
+   * The most recent unused password reset token. 
+   */
+  @Index(name="reset_index") private String currentEmailResetToken;
+  
+  /**
+   * The date on which the reset password token was issued.
+   */
+  @Temporal(TemporalType.TIMESTAMP) private Date tokenIssued;
+  
   public String getUsername() {
     return username;
   }
@@ -52,5 +80,11 @@ public class UserEmail implements Serializable {
   }
   public void setCurrentEmailResetToken(String currentEmailResetToken) {
     this.currentEmailResetToken = currentEmailResetToken;
+  }
+  public Date getTokenIssued() {
+    return tokenIssued;
+  }
+  public void setTokenIssued(Date tokenIssued) {
+    this.tokenIssued = tokenIssued;
   }
 }

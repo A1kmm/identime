@@ -13,7 +13,7 @@
 </c:if>
 <p>To reset your password, please enter your <b>username</b> below and press
 the reset button. A link to reset your password will be e-mailed to you.</p>
-  <form method="POST">
+  <form action="${baseURL}/forgot" method="POST">
     Username: <input type="text" name="accountName"/><input type="submit" value="E-mail Reset Link"/>
   </form>
 </body>
