@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ CommonInterceptorTest.class, SecureTokenServiceTest.class })
+@SuiteClasses({ CommonInterceptorTest.class, SecureTokenServiceTest.class, LocalUserServiceTest.class })
 public class AllTests {
 
 }
