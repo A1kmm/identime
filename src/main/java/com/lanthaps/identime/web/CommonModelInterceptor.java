@@ -31,6 +31,8 @@ public class CommonModelInterceptor extends HandlerInterceptorAdapter {
 			Object handler, ModelAndView modelAndView) {
 	  if (!modelAndView.getViewName().startsWith("redirect:")) {
 		  modelAndView.addObject("baseURL", settingService.loadStringSetting(SettingServiceImpl.baseURL));
+		  modelAndView.addObject("siteName", settingService.loadStringSetting(SettingServiceImpl.siteName));
+		  modelAndView.addObject("headerLogo", settingService.loadStringSetting(SettingServiceImpl.headerLogo));
 		  modelAndView.addObject("csrfToken", csrfTokenService.getSessionToken(request.getSession()));
 	  }
 	}

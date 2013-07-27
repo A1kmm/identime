@@ -83,27 +83,29 @@ public class OpenIDController {
     approval.setSiteEndpoint(siteEndpoint);
     userSiteApprovalRepository.save(approval);
     
-    HttpServletRequest pending = (HttpServletRequest)session.getAttribute("openid-pending-request");
+    ParameterList pending = (ParameterList)session.getAttribute("openid-pending-request");
     if (pending == null)
       return "home";
     else
-      return doOpenID(m, pending);
+      return doOpenID(m, pending, req);
   }
   
   @RequestMapping(value = "/provider", method = {RequestMethod.GET, RequestMethod.HEAD,
       RequestMethod.POST}) @Transactional
-  public String doOpenID(Model m, HttpServletRequest req) {
+  public String openIDProvider(Model m, HttpServletRequest req) {
     ParameterList request = new ParameterList(req.getParameterMap());
-
+    return doOpenID(m, request, req);
+  }
+  public String doOpenID(Model m, ParameterList request, HttpServletRequest rawReq) {
     String mode = request.getParameterValue("openid.mode");
     if ("associate".equals(mode))
       return raw(m, openIDManager.associationResponse(request).keyValueFormEncoding());
     else if ("check_authentication".equals(mode))
       return raw(m, openIDManager.verify(request).keyValueFormEncoding());
     else if ("checkid_immediate".equals(mode))
-      return doCheckID(m, request, req, true);
+      return doCheckID(m, request, rawReq, true);
     else if ("checkid_setup".equals(mode))
-      return doCheckID(m, request, req, false);
+      return doCheckID(m, request, rawReq, false);
     else
       return raw(m, DirectError.createDirectError("Relying Party sent bad openid.mode").keyValueFormEncoding());
   }
@@ -114,6 +116,18 @@ public class OpenIDController {
       authRequest = AuthRequest.createAuthRequest(request, openIDManager.getRealmVerifier());
     } catch (MessageException e) {
       return raw(m, DirectError.createDirectError("Invalid authorization request").keyValueFormEncoding());
+    }
+
+    URL returnURL;
+    String simplifiedURL;
+    try {
+      returnURL = new URL(authRequest.getReturnTo());
+      if (!returnURL.getProtocol().equals("http") && !returnURL.getProtocol().equals("https"))
+        return raw(m, DirectError.createDirectError("Only http and https return URLs supported").keyValueFormEncoding());
+      simplifiedURL =
+          new URL(returnURL.getProtocol(), returnURL.getHost(), returnURL.getPort(), "").toString();
+    } catch (MalformedURLException e) {
+      return raw(m, DirectError.createDirectError("Malformed return URL").keyValueFormEncoding());
     }
     
     if (authRequest.getIdentity() == null)
@@ -149,11 +163,12 @@ public class OpenIDController {
       // By the time we get here, we know that the claimed ID association is
       // valid, but we don't know if the user has agreed to log in to the site.
       expireOldSiteApprovals();
+        
       if (userSiteApprovalRepository.findByAuthorisingUserAndSiteEndpoint(
-            user, authRequest.getReturnTo()).isEmpty()) {
+            user, simplifiedURL).isEmpty()) {
         if (isImmediate)
           return sendAuthFailure(authRequest);
-        return doApprovalRequest(m, authRequest, rawReq);
+        return doApprovalRequest(m, request, rawReq, simplifiedURL);
       }
       
       // The user is authenticated to the claimed ID, and we have a valid
@@ -192,9 +207,10 @@ public class OpenIDController {
     return "login";
   }
   
-  private String doApprovalRequest(Model m, AuthRequest authRequest, HttpServletRequest rawReq) {
-    m.addAttribute("site", authRequest.getReturnTo());
-    rawReq.getSession().setAttribute("openid-pending-request", rawReq);
+  private String doApprovalRequest(Model m, ParameterList parameterList,
+      HttpServletRequest rawReq, String simplifiedURL) {
+    m.addAttribute("site", simplifiedURL);
+    rawReq.getSession().setAttribute("openid-pending-request", parameterList);
     return "approval";
   }
 }

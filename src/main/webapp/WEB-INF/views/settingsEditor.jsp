@@ -1,12 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib tagdir="/WEB-INF/tags/identime" prefix="local" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Settings Editor</title>
-  <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<local:site-theme title="Site Settings Editor" customBase="..">
   <script type="text/javascript">
     "use strict";
     var settingsData = [${settingsJSON}];
@@ -25,7 +20,7 @@
             	  return;
               settingInput.pendingSave = settingInput.val();
               $("#status").text("Save in progress...");
-              <%// We use a relative URI here so a broken base URI doesn't lock the admin out. %>
+              <%-- We use a relative URI here so a broken base URI doesn't lock the admin out. --%>
               $.ajax({ url: "saveSetting", data: { type: setting.type, setting: setting.name,
                 value: settingInput.pendingSave, csrfToken: $("#csrf").val() },
             	    error: function() { $("#status").text("Temporary problem saving setting"); },
@@ -54,13 +49,13 @@
       }
     });
   </script>
-</head>
-<body>
   <form><local:csrfProtect/></form>
-  <h2>Change your settings</h2>
-  <p id="status"></p>
-  <table border="1" id="settings">
-    <tr><th>Setting</th><th>Value</th></tr>
+  <div class="alert alert-info" id="status"></div>
+  <table class="table table-striped table-hover table-bordered">
+    <thead><tr><th style="width: 40%">Setting</th><th>Value</th></tr></thead>
+    <tbody id="settings">
+    </tbody>
   </table>
 </body>
 </html>
+</local:site-theme>

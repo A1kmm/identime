@@ -1,30 +1,41 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib tagdir="/WEB-INF/tags/identime" prefix="local" %>
-<html>
-  <head><title>Login Page</title></head><body onload='document.f.j_username.focus();'>
-<h3>Login with Username and Password</h3>
-<c:if test="${not empty param.login_error}">
-  <p class="error">
+    pageEncoding="UTF-8"
+%><%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"
+%><%@ taglib tagdir="/WEB-INF/tags/identime" prefix="local"
+%><local:site-theme title="Login" customBase=".">
+<c:if test="${not empty param.login_error}"
+ ><div class="alert alert-error">
     <c:out escapeXml="true" value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>
-  </p>
-</c:if>
-<form name='f' action='./checklogin' method='POST'>
+  </div
+></c:if>
+<form class="form-horizontal" action='./checklogin' method='POST'>
   <local:csrfProtect/>
-  <table>
-    <tr><td>User:</td><td>
-    <c:choose>
-      <c:when test="${not empty needUser}">
-        <input type='text' name='j_username' readonly value='${needUser}'>
-      </c:when>
-      <c:otherwise>
-        <input type='text' name='j_username'>
-      </c:otherwise>
-    </c:choose></td></tr>
-    <tr><td>Password:</td><td><input type='password' name='j_password'/></td></tr>
-    <tr><td colspan='2'><input name="submit" type="submit" value="Login"/></td></tr>
-  </table>
+  <div class="control-group">
+    <label class="control-label" for="j_username">User</label>
+    <div class="controls">
+      <c:choose
+       ><c:when test="${not empty needUser}"
+         ><input type='text' name='j_username' readonly value='${needUser}'
+        ></c:when
+        ><c:otherwise
+         ><input type='text' name='j_username' placeholder="Username"
+        ></c:otherwise>
+      </c:choose>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="j_password">Password</label>
+    <div class="controls">
+      <input type='password' name='j_password' placeholder="Password">
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <label class="checkbox">
+        <input type="checkbox" name="_spring_security_remember_me">Remember me
+      </label>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+  </div>  
 </form>
-</body>
-</html>
+</local:site-theme>

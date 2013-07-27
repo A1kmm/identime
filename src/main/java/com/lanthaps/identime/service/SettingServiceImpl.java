@@ -32,10 +32,14 @@ public class SettingServiceImpl implements SettingService {
   public SettingServiceImpl() {};
   
   public static SettingInformation<String> baseURL =
-      new SettingInformation<String>(String.class, "web.baseURL", "Base URL for the web application", ""),
+      new SettingInformation<String>(String.class, "web.baseURL", "Base URL for the web application (no trailing /)", "."),
+      siteName =
+          new SettingInformation<String>(String.class, "web.siteName", "Name of your service", "MyIdentime"),
+      headerLogo =
+          new SettingInformation<String>(String.class, "web.headerLogo", "URL of site logo image (or blank)", ""),      
       emailFrom =
-      new SettingInformation<String>(String.class, "email.from", "From e-mail for e-mails sent out",
-          "identime-admin@example.org"),
+          new SettingInformation<String>(String.class, "email.from", "From e-mail for e-mails sent out",
+              "identime-admin@example.org"),
       emailServer =
           new SettingInformation<String>(String.class, "email.server", "E-mail server to send e-mails from",
               "smtp.example.org"),
@@ -65,8 +69,9 @@ public class SettingServiceImpl implements SettingService {
             3600 * 24 * 2);
   
   private static final SettingInformation<?>[] allSettings = {
-    baseURL, emailFrom, emailServer, emailProtocol, emailPort, emailUsername, emailPassword,
-    approvalDuration, resetEmailDelayDuration, tokenExpiryTime };
+    baseURL, siteName, headerLogo, emailFrom, emailServer, emailProtocol,
+    emailPort, emailUsername, emailPassword, approvalDuration,
+    resetEmailDelayDuration, tokenExpiryTime };
   
   /**
    * @return The set of all settings that can be set.

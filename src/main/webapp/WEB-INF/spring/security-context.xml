@@ -12,6 +12,7 @@
     <!-- Security definitions. -->
 	<http use-expressions="true">
 	  <intercept-url pattern="/login" access="permitAll"/>
+      <intercept-url pattern="/resources/**" access="permitAll"/>
       <intercept-url pattern="/register" access="permitAll"/>
 	  <intercept-url pattern="/provider" access="permitAll"/>
       <intercept-url pattern="/forgot" access="permitAll"/>
