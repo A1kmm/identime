@@ -1,5 +1,6 @@
 <%@tag
 %><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
+%><%@taglib prefix="sec" uri="http://www.springframework.org/security/tags"
 %><%@attribute name="title" type="java.lang.String"
 %><%-- Note that customBase is used for pages that must work even if the configured baseURL is wrong
 --%><%@attribute name="customBase" type="java.lang.String"
@@ -27,6 +28,26 @@
          <c:when test="${not empty headerLogo}"><img src="${headerLogo}"/></c:when>
          <c:otherwise><h1>${siteName}</h1></c:otherwise>
        </c:choose>
+       <div class="navbar"><div class="navbar-inner">
+         <ul class="nav">
+           <sec:authorize url="/"><li><a href="${baseURL}/">Home</a></li>
+           </sec:authorize
+           ><sec:authorize access="isAnonymous()">
+           <li><a href="${baseURL}/login">Login</a></li>
+           <li><a href="${baseURL}/forgot">Forgot Password</a></li>
+           <li><a href="${baseURL}/register">Register</a></li>
+           </sec:authorize
+           ><sec:authorize url="/logout">
+           <li><a href="${baseURL}/logout">Logout</a></li>
+           </sec:authorize
+           ><sec:authorize access="isAuthenticated()">
+           <li><a href="${baseURL}/accountsettings">Account Settings</a></li>
+           </sec:authorize
+           ><sec:authorize url="/admin/settings">
+           <li><a href="${baseURL}/admin/settings">Site Settings</a></li>
+           </sec:authorize>
+         </ul>
+       </div></div>
        <h2>${title}</h2>
        <jsp:doBody/>
     </div>
