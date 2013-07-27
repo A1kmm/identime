@@ -76,9 +76,9 @@ public class SettingsController {
           settingService.saveStringSetting((SettingInformation<String>)s, value);
         else if (s.getType().equals(Boolean.class)) {
           boolean r;
-          if (value == "true") {
+          if (value.equals("true")) {
             r = true;
-          } else if (value == "false") {
+          } else if (value.equals("false")) {
             r = false;
           } else {
             model.addAttribute("rawText", "{\"error\": \"Invalid boolean value - expecting true or false\"}");

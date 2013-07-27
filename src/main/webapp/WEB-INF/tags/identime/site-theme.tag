@@ -48,8 +48,9 @@
            </sec:authorize>
          </ul>
        </div></div>
-       <h2>${title}</h2>
-       <jsp:doBody/>
+       <h2>${title}</h2
+       ><c:if test="${not empty siteNotice}"><div class="alert alert-info">${siteNotice}</div></c:if
+       ><jsp:doBody/>
     </div>
   </body>
 </html>

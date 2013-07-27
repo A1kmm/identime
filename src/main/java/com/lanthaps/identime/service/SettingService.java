@@ -19,4 +19,10 @@ public interface SettingService {
   public void saveStringSetting(SettingInformation<String> settingInfo, String value);
   public void saveBooleanSetting(SettingInformation<Boolean> settingInfo, boolean value);
   public void saveIntSetting(SettingInformation<Integer> settingInfo, int value);
+  
+  /**
+   * A convenience function to check if the site is in shutdown mode.
+   * @return true if the site is in shutdown (maintenance) mode.
+   */
+  public boolean isShutdown();
 }

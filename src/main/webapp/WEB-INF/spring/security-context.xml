@@ -9,18 +9,20 @@
 	
     <global-method-security pre-post-annotations="enabled" />
 
+    <beans:bean name="settingService" class="com.lanthaps.identime.service.SettingServiceImpl" />
     <!-- Security definitions. -->
 	<http use-expressions="true">
 	  <intercept-url pattern="/login" access="permitAll"/>
       <intercept-url pattern="/resources/**" access="permitAll"/>
-      <intercept-url pattern="/register" access="permitAll"/>
-	  <intercept-url pattern="/provider" access="permitAll"/>
-      <intercept-url pattern="/forgot" access="permitAll"/>
-      <intercept-url pattern="/forgot/token" access="permitAll"/>
-      <intercept-url pattern="/accountsettings" access="permitAll"/>
-	  <intercept-url pattern="/u/*" access="permitAll"/>
+      <intercept-url pattern="/register" access="not @settingService.isShutdown() or hasRole('adminpanel')"/>
+	  <intercept-url pattern="/provider" access="not @settingService.isShutdown() or hasRole('adminpanel')"/>
+      <intercept-url pattern="/forgot" access="not @settingService.isShutdown() or hasRole('adminpanel')"/>
+      <intercept-url pattern="/forgot/token" access="not @settingService.isShutdown() or hasRole('adminpanel')"/>
+      <intercept-url pattern="/accountsettings" access="not @settingService.isShutdown() or hasRole('adminpanel')"/>
+	  <intercept-url pattern="/u/*" access="!@settingService.isShutdown() or hasRole('adminpanel')"/>
+	  <intercept-url pattern="/" access="isAuthenticated()"/>
 	  <intercept-url pattern="/admin/**" access="hasRole('adminpanel')"/>
-	  <intercept-url pattern="/**" access="isAuthenticated()"/>
+	  <intercept-url pattern="/**" access="isAuthenticated() and (not @settingService.isShutdown() or hasRole('adminpanel'))"/>
 	  <form-login login-page="/login" login-processing-url="/checklogin" authentication-failure-url="/login?login_error=1"/>
 	  <logout logout-url="/logout" logout-success-url="/login"/>
 	  <remember-me user-service-ref="localUserService"/>

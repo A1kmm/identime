@@ -37,6 +37,9 @@ public class SettingServiceImpl implements SettingService {
           new SettingInformation<String>(String.class, "web.siteName", "Name of your service", "MyIdentime"),
       headerLogo =
           new SettingInformation<String>(String.class, "web.headerLogo", "URL of site logo image (or blank)", ""),      
+      siteNotice =
+          new SettingInformation<String>(String.class, "web.notice", "Notice to display to all users",
+              ""),
       emailFrom =
           new SettingInformation<String>(String.class, "email.from", "From e-mail for e-mails sent out",
               "identime-admin@example.org"),
@@ -67,9 +70,13 @@ public class SettingServiceImpl implements SettingService {
         new SettingInformation<Integer>(Integer.class, "account.tokenExpiryTime",
             "The time (in seconds) that a reset password token is valid for",
             3600 * 24 * 2);
+  public static SettingInformation<Boolean> shutdownMode =
+      new SettingInformation<Boolean>(Boolean.class, "admin.shutdown",
+          "Shut down most functionality to non adminpanel users, for maintenance?", false);
   
   private static final SettingInformation<?>[] allSettings = {
-    baseURL, siteName, headerLogo, emailFrom, emailServer, emailProtocol,
+    baseURL, siteName, headerLogo, siteNotice, shutdownMode,
+    emailFrom, emailServer, emailProtocol,
     emailPort, emailUsername, emailPassword, approvalDuration,
     resetEmailDelayDuration, tokenExpiryTime };
   
@@ -116,5 +123,9 @@ public class SettingServiceImpl implements SettingService {
     s.setName(settingInfo.getName());
     s.setIntValue(value);
     intSettings.save(s);
+  }
+  
+  @Override public boolean isShutdown() {
+    return loadBooleanSetting(shutdownMode);
   }
 }

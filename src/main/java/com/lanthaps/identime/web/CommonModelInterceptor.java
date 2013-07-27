@@ -33,6 +33,10 @@ public class CommonModelInterceptor extends HandlerInterceptorAdapter {
 		  modelAndView.addObject("baseURL", settingService.loadStringSetting(SettingServiceImpl.baseURL));
 		  modelAndView.addObject("siteName", settingService.loadStringSetting(SettingServiceImpl.siteName));
 		  modelAndView.addObject("headerLogo", settingService.loadStringSetting(SettingServiceImpl.headerLogo));
+		  String siteNotice = settingService.loadStringSetting(SettingServiceImpl.siteNotice);
+		  if ((siteNotice == null || siteNotice.isEmpty()) && settingService.isShutdown())
+		    siteNotice = "Site is down for maintenance, most features are disabled";
+		  modelAndView.addObject("siteNotice", siteNotice);
 		  modelAndView.addObject("csrfToken", csrfTokenService.getSessionToken(request.getSession()));
 	  }
 	}
