@@ -4,12 +4,17 @@ Identime
 Identime is an OpenID web application which will, when completed, offer a way
 to create your own public OpenID Provider that works out of the box.
 
-It is still a work in progress; major features still need to be added, and the
-views currently provided are very rudimentary. You can, however, use Identime
-as it is now to log in to OpenID enabled servers.
+It is still a work in progress; I plan to improve it in the future. However,
+it is usable as it is now.
 
 Identime is built to run in a Servlet container; it is based on OpenID4J,
 Spring, Hibernate and a number of other Java technologies.
+
+Is there a demo site?
+---------------------
+
+Feel free to try it out on [my development site](http://home.amxl.com/identime) -
+but be aware that this is only a test site - it doesn't support SSL, 
 
 What is an OpenID Provider?
 ---------------------------
@@ -26,9 +31,11 @@ How can I build and use Identime?
 
 You will need a working Java Servlet Container; if you don't already have one,
 [Apache Tomcat](http://tomcat.apache.org) has been tested and confirmed to work.
-I eventually plan to make Identime available as a WAR archive that you can
-download and deploy, but in the interim, you will need to build it yourself
-using Maven.
+
+You can either download a prebuilt WAR archive for a release (under releases on
+github) that you can deploy straight away, or build it yourself using Maven.
+
+If you choose to build it yourself:
 
 Install maven, checkout identime (git clone https://github.com/A1kmm/identime), and then run:
 
