@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="control-group">
-      <label class="control-label">E-mail (optional)</label></td>
+      <label class="control-label">E-mail (optional)</label>
       <div class="controls">
         <form:input path="email" placeholder="E-mail" id="email"/>
         <form:errors class="alert alert-error" path="email"/>
