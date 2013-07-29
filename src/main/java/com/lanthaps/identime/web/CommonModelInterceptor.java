@@ -29,6 +29,8 @@ public class CommonModelInterceptor extends HandlerInterceptorAdapter {
 	@Override public void postHandle(
 			HttpServletRequest request, HttpServletResponse response,
 			Object handler, ModelAndView modelAndView) {
+	  if (modelAndView == null || modelAndView.getViewName() == null)
+	    return;
 	  if (!modelAndView.getViewName().startsWith("redirect:")) {
 		  modelAndView.addObject("baseURL", settingService.loadStringSetting(SettingServiceImpl.baseURL));
 		  modelAndView.addObject("siteName", settingService.loadStringSetting(SettingServiceImpl.siteName));

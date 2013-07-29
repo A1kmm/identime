@@ -43,7 +43,7 @@
               settingInput.changeTimer = window.setTimeout(ensureSaved, 1000);
           	  });
           settingInput.blur(ensureSaved);
-          settingRow.append($("<tr/>").append(settingInput));
+          settingRow.append($("<td/>").append(settingInput));
           $('#settings').append(settingRow);
         })();
       }

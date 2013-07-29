@@ -40,7 +40,7 @@ import com.lanthaps.identime.service.SettingServiceImpl;
  */
 @Controller
 public class OpenIDController {
-  OpenIDController() {
+  public OpenIDController() {
     openIDManager = new ServerManager();
   }
 	

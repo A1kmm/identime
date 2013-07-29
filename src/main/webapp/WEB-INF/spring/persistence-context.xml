@@ -24,22 +24,37 @@
   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
         p:entityManagerFactory-ref="entityManagerFactory"/>
   
-  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-    <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
-    <property name="url" value="jdbc:hsqldb:data/identime;shutdown=true;hsqldb.write_delay=false;"/>
-    <property name="username" value="sa"/>
-    <property name="password" value=""/>
-  </bean>
-		
   <bean id="entityManagerFactory" 
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-    	  p:dataSource-ref="dataSource"
-          p:persistenceUnitName="identimejpa">
-        <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
-        </property>
-        <property name="jpaDialect">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
-        </property>
+    	  p:dataSource-ref="dataSource" p:packagesToScan="com.lanthaps.identime.model">
+    <property name="jpaVendorAdapter">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+    </property>
+    <property name="jpaDialect">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+    </property>
+    <property name="jpaPropertyMap">
+      <props>
+        <prop key="hibernate.hbm2ddl.auto">update</prop>
+        <prop key="hibernate.ejb.autodetection">class</prop>
+      </props>
+    </property>
   </bean>
+  
+  <!-- The productionwar (which is what production users who don't want to build
+    Identime themselves and alter the standard configuration use) makes use of
+    hsqldb, which is stored in the data directory inside their container. -->
+  <beans profile="productionwar">
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+      <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+      <property name="url" value="jdbc:hsqldb:data/identime;shutdown=true;hsqldb.write_delay=false;"/>
+      <property name="username" value="sa"/>
+      <property name="password" value=""/>
+    </bean>
+  </beans>
+  <!-- Tests (integration and functional, unit tests only use database mocks)
+    run on an in-memory database instance that gets recreated as needed. -->
+  <beans profile="tests">
+    <jdbc:embedded-database id="dataSource" type="HSQL"/>
+  </beans>
 </beans>

@@ -35,7 +35,7 @@
     </div>
     <div class="control-group">
       <div class="controls">
-        <button class="btn btn-primary" type="submit">Register"</button>
+        <button class="btn btn-primary" type="submit">Register</button>
       </div>
     </div>
   </form:form>

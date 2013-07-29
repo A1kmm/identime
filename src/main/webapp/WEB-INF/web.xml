@@ -9,6 +9,11 @@
 		<param-value>/WEB-INF/spring/root-context.xml</param-value>
 	</context-param>
 	
+	<context-param>
+       <param-name>spring.profiles.active</param-name>
+       <param-value>productionwar</param-value>
+    </context-param>
+	
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
